@@ -8,6 +8,7 @@ import com.github.bagiasn.nasavoicecrawler.data.api.nlu.ApiResponse;
 import com.github.bagiasn.nasavoicecrawler.data.api.nlu.NluApi;
 import com.github.bagiasn.nasavoicecrawler.data.api.nlu.NluRequestBody;
 import com.github.bagiasn.nasavoicecrawler.data.helper.Constants;
+import com.github.bagiasn.nasavoicecrawler.ui.NlpEventsListener;
 
 import java.io.IOException;
 
@@ -40,7 +41,7 @@ public class DataRepository {
     /**
      * Issue an API request and pass the results.
      */
-    public void performNluRequest(String text) {
+    public void performNluRequest(String text, NlpEventsListener callback) {
         executor.getBackgroundIO().execute(() -> {
             // Create the request body.
             NluRequestBody body = new NluRequestBody();
@@ -52,6 +53,10 @@ public class DataRepository {
                 Response<ApiResponse> response = call.execute();
                 if (response != null && response.isSuccessful()) {
                     Log.i(TAG, "Result successful");
+                    ApiResponse result = response.body();
+                    if (result != null && !result.hasError()) {
+                        callback.onLoadSingleImage(result.getImageUrl());
+                    }
 
                 } else {
                     Log.e(TAG, "API response is null :(");

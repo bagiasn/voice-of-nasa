@@ -10,4 +10,6 @@ public interface NlpEventsListener {
     void onNlpError();
 
     void onRecognizerReady();
+
+    void onLoadSingleImage(String imageUrl);
 }

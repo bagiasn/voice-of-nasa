@@ -9,7 +9,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.github.bagiasn.nasavoicecrawler.R;
 import com.github.bagiasn.nasavoicecrawler.data.api.repo.DataRepository;
 import com.github.bagiasn.nasavoicecrawler.data.helper.Constants;
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
 
     @Override
     public void onNlpResult(String result) {
-        dataRepository.performNluRequest(result);
+        dataRepository.performNluRequest(result, this);
 
         closeRecognizer();
     }
@@ -89,6 +91,16 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     public void onRecognizerReady() {
         AVLoadingIndicatorView indicatorView = findViewById(R.id.main_listeningIndicator);
         indicatorView.post(indicatorView::show);
+    }
+
+    @Override
+    public void onLoadSingleImage(String imageUrl) {
+        runOnUiThread(() -> {
+            ImageView imgHolder = findViewById(R.id.main_image_holder);
+            Glide.with(MainActivity.this)
+                    .load(imageUrl)
+                    .into(imgHolder);
+        });
     }
 
     private void closeRecognizer() {

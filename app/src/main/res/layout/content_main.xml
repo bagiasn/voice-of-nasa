@@ -8,6 +8,15 @@
     tools:context=".ui.MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <ImageView
+        android:id="@+id/main_image_holder"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/main_image_holder_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/main_listeningIndicator"
         style="@style/AVLoadingIndicatorView"

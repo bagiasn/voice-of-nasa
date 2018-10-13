@@ -13,7 +13,7 @@ public class ApiResponse {
     private Speak speak;
     private Graph graph;
 
-    public boolean getError() {
+    public boolean hasError() {
         return error;
     }
 
