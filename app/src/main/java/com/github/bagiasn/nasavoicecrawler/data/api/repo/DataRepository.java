@@ -43,7 +43,7 @@ public class DataRepository {
     /**
      * Issue an API request and pass the results on the listener.
      */
-    public void performNluRequest(String text, int state, NlpEventsListener callback) {
+    public void performNluRequest(String text, int state, boolean shouldMoveOn, NlpEventsListener callback) {
         executor.getBackgroundIO().execute(() -> {
             // Create the request body.
             NluRequestBody body = new NluRequestBody();
@@ -51,7 +51,12 @@ public class DataRepository {
             body.setLanguage(Constants.APP_LANGUAGE);
             body.setState(state);
 
-            Call<ApiResponse> call = nluApi.getNluResult(body);
+            Call<ApiResponse> call;
+            if (shouldMoveOn) {
+                call = nluApi.moveOn(body);
+            } else {
+                call = nluApi.getNluResult(body);
+            }
             try {
                 Response<ApiResponse> response = call.execute();
                 if (response != null && response.isSuccessful()) {

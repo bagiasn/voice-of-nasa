@@ -9,10 +9,8 @@ import java.util.Locale;
 public class TtsManager {
     private TextToSpeech ttsInstance;
     private String lastText;
-    private TtsEventListener callback;
 
     public TtsManager(Context context, TtsEventListener callback) {
-        this.callback = callback;
         this.ttsInstance = new TextToSpeech(context, status -> {
             if (TextToSpeech.ERROR != status) {
                 ttsInstance.setLanguage(Locale.forLanguageTag("el_GR"));

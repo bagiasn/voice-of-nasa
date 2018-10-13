@@ -7,4 +7,7 @@ import retrofit2.http.POST;
 public interface NluApi {
     @POST("/voiceSearch")
     Call<ApiResponse> getNluResult(@Body NluRequestBody body);
+
+    @POST("/moveOn")
+    Call<ApiResponse> moveOn(@Body NluRequestBody body);
 }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.annotation.Nullable;
@@ -24,11 +25,13 @@ import com.github.bagiasn.nasavoicecrawler.R;
 import com.github.bagiasn.nasavoicecrawler.data.api.repo.DataRepository;
 import com.github.bagiasn.nasavoicecrawler.data.helper.Constants;
 import com.github.bagiasn.nasavoicecrawler.data.utils.NlpListener;
+import com.github.bagiasn.nasavoicecrawler.data.utils.TtsEventListener;
+import com.github.bagiasn.nasavoicecrawler.data.utils.TtsManager;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements NlpEventsListener {
+public class MainActivity extends AppCompatActivity implements NlpEventsListener, TtsEventListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static boolean isRecognitionDisabled = false;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
 
     private TextSwitcher startTextSwitcher;
     private TextSwitcher textSwitcher;
+    private TtsManager ttsManager;
 
     private static int mainState = 1;
 
@@ -56,6 +60,13 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
         setupUtil();
     }
 
+    @Override
+    protected void onDestroy() {
+        if (ttsManager != null) ttsManager.terminate();
+
+        super.onDestroy();
+    }
+
     private void setupUtil() {
         // Setup the intent here for reusability.
         recognitionIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -69,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
             isRecognitionDisabled = true;
         }
 
+        ttsManager = new TtsManager(getApplicationContext(), this);
+
         dataRepository = DataRepository.getInstance();
     }
 
@@ -79,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             if (!isRecognitionDisabled) {
+                ttsManager.stop();
                 // Listen!
                 startListening();
             }
@@ -88,18 +102,27 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
 
         new Handler().postDelayed(() -> {
             startTextSwitcher.setText(getString(R.string.main_description));
+            ttsManager.speak(getString(R.string.main_description));
         }, 1500);
     }
 
     private void startListening() {
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        speechRecognizer.setRecognitionListener(new NlpListener(this));
-        speechRecognizer.startListening(recognitionIntent);
+        if (Looper.getMainLooper() != Looper.myLooper()) {
+            runOnUiThread(() -> {
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(MainActivity.this);
+                speechRecognizer.setRecognitionListener(new NlpListener(MainActivity.this));
+                speechRecognizer.startListening(recognitionIntent);
+            });
+        } else {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(MainActivity.this);
+            speechRecognizer.setRecognitionListener(new NlpListener(MainActivity.this));
+            speechRecognizer.startListening(recognitionIntent);
+        }
     }
 
     @Override
     public void onNlpResult(String result) {
-        dataRepository.performNluRequest(result, mainState,this);
+        dataRepository.performNluRequest(result, mainState,false,this);
 
         closeRecognizer();
     }
@@ -107,7 +130,8 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     @Override
     public void onNlpError() {
         // Show error popup.
-
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.post(fab::show);
         // Clean speechRecognizer.
         closeRecognizer();
     }
@@ -121,14 +145,8 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     @Override
     public void onLoadResult(int type, ArrayList<String> result) {
         if (type == 0) {
-            runOnUiThread(() -> {
-                if (mainState > 2) {
-                    startTextSwitcher.setCurrentText("");
-                    textSwitcher.setText(result.get(2));
-                } else {
-                    startTextSwitcher.setText(result.get(2));
-                }
-            });
+            runOnUiThread(() -> changeText(result.get(2)));
+            ttsManager.speak(result.get(2));
         } else {
             Intent intent = new Intent(this, InfoActivity.class);
             intent.putStringArrayListExtra(Constants.EXTRA_INFO_LIST, result);
@@ -140,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                dataRepository.performNluRequest("", mainState, this);
+                dataRepository.performNluRequest("", mainState, true,this);
             }
         }
     }
@@ -169,7 +187,6 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     }
 
     private ViewSwitcher.ViewFactory startViewFactory = () -> {
-        // Create a new TextView
         TextView textView = new TextView(MainActivity.this);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -178,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     };
 
     private ViewSwitcher.ViewFactory mainViewFactory = () -> {
-        // Create a new TextView
         TextView textView = new TextView(MainActivity.this);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -187,4 +203,38 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
         textView.setLineSpacing(1.2f, 1);
         return textView;
     };
+
+    /**
+     * Hacky, dirty method for using different text switchers for different occasions.
+     *
+     * All this just to be able to use different text sizes.
+     *
+     * But it's a hackathon so don't worry.
+     *
+     * @param newText the updated text to set.
+     */
+    private void changeText(String newText) {
+        switch (mainState) {
+            case 1:
+            case 2:
+            case 5:
+            case 6:
+                textSwitcher.setCurrentText("");
+                startTextSwitcher.setText(newText);
+                break;
+            case 3:
+            case 4:
+                startTextSwitcher.setCurrentText("");
+                textSwitcher.setText(newText);
+                break;
+        }
+    }
+
+    @Override
+    public void onDone() {
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.post(fab::hide);
+
+        startListening();
+    }
 }
