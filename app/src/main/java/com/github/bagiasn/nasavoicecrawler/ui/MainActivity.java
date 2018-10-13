@@ -10,13 +10,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.github.bagiasn.nasavoicecrawler.R;
+import com.github.bagiasn.nasavoicecrawler.data.api.nlu.ApiResponse;
 import com.github.bagiasn.nasavoicecrawler.data.api.repo.DataRepository;
 import com.github.bagiasn.nasavoicecrawler.data.helper.Constants;
 import com.github.bagiasn.nasavoicecrawler.data.utils.NlpListener;
 import com.wang.avi.AVLoadingIndicatorView;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity implements NlpEventsListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -91,12 +95,19 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     }
 
     @Override
-    public void onLoadImage(String imageUrl) {
+    public void onLoadResult(ApiResponse result) {
         runOnUiThread(() -> {
-//            ImageView imgHolder = findViewById(R.id.main_image_holder);
-//            Glide.with(MainActivity.this)
-//                    .load(imageUrl)
-//                    .into(imgHolder);
+            // Set title.
+            TextView tvTitle = findViewById(R.id.main_title);
+            tvTitle.setText(result.getTitle());
+            // Load image.
+            ImageView imgHolder = findViewById(R.id.main_image_holder);
+            Glide.with(MainActivity.this)
+                    .load(Constants.API_SERVER + result.getUriPath())
+                    .into(imgHolder);
+            // Set TTS text.
+            TextView tvTts = findViewById(R.id.main_tts);
+            tvTts.setText(result.getTextToSpeak());
         });
     }
 

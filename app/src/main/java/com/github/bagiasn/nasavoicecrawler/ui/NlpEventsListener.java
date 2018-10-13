@@ -1,5 +1,7 @@
 package com.github.bagiasn.nasavoicecrawler.ui;
 
+import com.github.bagiasn.nasavoicecrawler.data.api.nlu.ApiResponse;
+
 /**
  * Interface for handling data operations results on the UI level.
  */
@@ -11,5 +13,5 @@ public interface NlpEventsListener {
 
     void onRecognizerReady();
 
-    void onLoadImage(String imageUrl);
+    void onLoadResult(ApiResponse result);
 }

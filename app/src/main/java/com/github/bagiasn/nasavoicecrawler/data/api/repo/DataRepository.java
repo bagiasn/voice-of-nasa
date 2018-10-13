@@ -55,9 +55,8 @@ public class DataRepository {
                     Log.i(TAG, "Result successful");
                     ApiResponse result = response.body();
                     if (result != null && !result.hasError()) {
-                        callback.onLoadImage(Constants.API_SERVER + result.getUriPath());
+                        callback.onLoadResult(result);
                     }
-
                 } else {
                     Log.e(TAG, "API response is unsuccessful :(");
                 }
