@@ -53,14 +53,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <TextView
-        android:id="@+id/info_tts"
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="8dp"
         app:layout_constraintTop_toBottomOf="@id/info_separator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/info_tts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:padding="8dp"/>
+
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

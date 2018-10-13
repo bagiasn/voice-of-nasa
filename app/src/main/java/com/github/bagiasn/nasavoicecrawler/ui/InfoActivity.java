@@ -25,6 +25,7 @@ public class InfoActivity extends AppCompatActivity implements TtsEventListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
         Toolbar toolbar = findViewById(R.id.info_toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         Intent callingIntent = getIntent();
