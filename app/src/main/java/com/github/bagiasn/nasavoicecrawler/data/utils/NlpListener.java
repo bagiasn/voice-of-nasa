@@ -26,7 +26,7 @@ public class NlpListener implements RecognitionListener {
     }
 
     public void onReadyForSpeech(Bundle params) {
-
+        callback.onRecognizerReady();
     }
 
     public void onBeginningOfSpeech() { Log.d(TAG, "BOS"); }

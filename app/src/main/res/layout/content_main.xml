@@ -8,13 +8,17 @@
     tools:context=".ui.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/main_listeningIndicator"
+        style="@style/AVLoadingIndicatorView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:visibility="gone"
+        app:indicatorColor="@android:color/holo_blue_light"
+        app:indicatorName="BallRotateIndicator"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

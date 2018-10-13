@@ -8,4 +8,6 @@ public interface NlpEventsListener {
     void onNlpResult(String result);
 
     void onNlpError();
+
+    void onRecognizerReady();
 }

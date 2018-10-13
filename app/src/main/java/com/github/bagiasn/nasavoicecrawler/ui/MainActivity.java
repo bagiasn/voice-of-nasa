@@ -14,6 +14,7 @@ import com.github.bagiasn.nasavoicecrawler.R;
 import com.github.bagiasn.nasavoicecrawler.data.api.repo.DataRepository;
 import com.github.bagiasn.nasavoicecrawler.data.helper.Constants;
 import com.github.bagiasn.nasavoicecrawler.data.utils.NlpListener;
+import com.wang.avi.AVLoadingIndicatorView;
 
 public class MainActivity extends AppCompatActivity implements NlpEventsListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -84,10 +85,18 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
         closeRecognizer();
     }
 
+    @Override
+    public void onRecognizerReady() {
+        AVLoadingIndicatorView indicatorView = findViewById(R.id.main_listeningIndicator);
+        indicatorView.post(indicatorView::show);
+    }
+
     private void closeRecognizer() {
         if (speechRecognizer != null) {
             speechRecognizer.destroy();
             speechRecognizer = null;
         }
+        AVLoadingIndicatorView indicatorView = findViewById(R.id.main_listeningIndicator);
+        indicatorView.post(indicatorView::smoothToHide);
     }
 }
