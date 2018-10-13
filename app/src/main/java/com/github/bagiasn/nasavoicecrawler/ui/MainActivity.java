@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     }
 
     @Override
-    public void onLoadSingleImage(String imageUrl) {
+    public void onLoadImage(String imageUrl) {
         runOnUiThread(() -> {
 //            ImageView imgHolder = findViewById(R.id.main_image_holder);
 //            Glide.with(MainActivity.this)

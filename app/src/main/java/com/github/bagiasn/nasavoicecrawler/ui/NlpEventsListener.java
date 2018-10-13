@@ -11,5 +11,5 @@ public interface NlpEventsListener {
 
     void onRecognizerReady();
 
-    void onLoadSingleImage(String imageUrl);
+    void onLoadImage(String imageUrl);
 }

@@ -39,7 +39,7 @@ public class DataRepository {
     }
 
     /**
-     * Issue an API request and pass the results.
+     * Issue an API request and pass the results on the listener.
      */
     public void performNluRequest(String text, NlpEventsListener callback) {
         executor.getBackgroundIO().execute(() -> {
@@ -55,11 +55,11 @@ public class DataRepository {
                     Log.i(TAG, "Result successful");
                     ApiResponse result = response.body();
                     if (result != null && !result.hasError()) {
-                        callback.onLoadSingleImage(result.getImageUrl());
+                        callback.onLoadImage(Constants.API_SERVER + result.getUriPath());
                     }
 
                 } else {
-                    Log.e(TAG, "API response is null :(");
+                    Log.e(TAG, "API response is unsuccessful :(");
                 }
             } catch (IOException e) {
                 Log.e(TAG, "API call failed: " + e.getMessage());
