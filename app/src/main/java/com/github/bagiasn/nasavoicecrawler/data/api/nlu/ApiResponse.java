@@ -8,12 +8,12 @@ import java.util.List;
  * This class represents the API response to {@link ApiRequest}.
  */
 public class ApiResponse {
-    private String error;
+    private boolean error;
     private Image image;
     private Speak speak;
     private Graph graph;
 
-    public String getError() {
+    public boolean getError() {
         return error;
     }
 

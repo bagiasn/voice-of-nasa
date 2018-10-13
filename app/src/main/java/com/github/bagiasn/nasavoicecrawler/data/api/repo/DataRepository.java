@@ -50,8 +50,9 @@ public class DataRepository {
             Call<ApiResponse> call = nluApi.getNluResult(body);
             try {
                 Response<ApiResponse> response = call.execute();
-                if (response != null) {
-                    Log.i(TAG, "Result: " + response.message());
+                if (response != null && response.isSuccessful()) {
+                    Log.i(TAG, "Result successful");
+
                 } else {
                     Log.e(TAG, "API response is null :(");
                 }

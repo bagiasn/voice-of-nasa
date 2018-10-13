@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            if (isRecognitionDisabled) {
+            if (!isRecognitionDisabled) {
                 Snackbar.make(view, "Start speaking!", Snackbar.LENGTH_LONG).show();
                 startListening();
             }
@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     @Override
     public void onNlpResult(String result) {
         dataRepository.performNluRequest(result);
+
+        closeRecognizer();
     }
 
     @Override
@@ -79,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
         // Show error popup.
 
         // Clean speechRecognizer.
+        closeRecognizer();
+    }
+
+    private void closeRecognizer() {
         if (speechRecognizer != null) {
             speechRecognizer.destroy();
             speechRecognizer = null;

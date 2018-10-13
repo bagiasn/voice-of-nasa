@@ -71,6 +71,7 @@ public class NlpListener implements RecognitionListener {
                 Log.e(TAG,"Unknown error.");
                 break;
         }
+        callback.onNlpError();
     }
 
     public void onResults(Bundle results) {
