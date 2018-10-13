@@ -3,6 +3,7 @@ package com.github.bagiasn.nasavoicecrawler.data.api.nlu;
 public class NluRequestBody {
     private String text;
     private String language;
+    private int state;
 
     public String getText() {
         return text;
@@ -18,5 +19,9 @@ public class NluRequestBody {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

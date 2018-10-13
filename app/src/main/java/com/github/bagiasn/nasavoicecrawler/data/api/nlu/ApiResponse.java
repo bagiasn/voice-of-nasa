@@ -8,6 +8,8 @@ public class ApiResponse {
     private String title;
     private String photo;
     private String text;
+    private int type;
+    private int state;
 
     public boolean hasError() {
         return error;
@@ -25,4 +27,11 @@ public class ApiResponse {
         return title;
     }
 
+    public int getState() {
+        return state;
+    }
+
+    public int getType() {
+        return type;
+    }
 }

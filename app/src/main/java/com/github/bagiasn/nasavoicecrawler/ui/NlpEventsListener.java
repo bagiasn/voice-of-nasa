@@ -1,6 +1,6 @@
 package com.github.bagiasn.nasavoicecrawler.ui;
 
-import com.github.bagiasn.nasavoicecrawler.data.api.nlu.ApiResponse;
+import java.util.ArrayList;
 
 /**
  * Interface for handling data operations results on the UI level.
@@ -13,5 +13,5 @@ public interface NlpEventsListener {
 
     void onRecognizerReady();
 
-    void onLoadResult(ApiResponse result);
+    void onLoadResult(int type, ArrayList<String> result);
 }
