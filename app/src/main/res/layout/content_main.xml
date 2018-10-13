@@ -11,8 +11,8 @@
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/main_listeningIndicator"
         style="@style/AVLoadingIndicatorView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:visibility="gone"
         app:indicatorColor="@android:color/holo_blue_light"
         app:indicatorName="BallRotateIndicator"
