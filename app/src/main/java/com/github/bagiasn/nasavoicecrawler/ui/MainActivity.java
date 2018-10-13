@@ -59,10 +59,7 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            if (!isRecognitionDisabled) {
-                Snackbar.make(view, "Start speaking!", Snackbar.LENGTH_LONG).show();
-                startListening();
-            }
+            if (!isRecognitionDisabled) { startListening(); }
         });
     }
 
@@ -96,10 +93,10 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     @Override
     public void onLoadSingleImage(String imageUrl) {
         runOnUiThread(() -> {
-            ImageView imgHolder = findViewById(R.id.main_image_holder);
-            Glide.with(MainActivity.this)
-                    .load(imageUrl)
-                    .into(imgHolder);
+//            ImageView imgHolder = findViewById(R.id.main_image_holder);
+//            Glide.with(MainActivity.this)
+//                    .load(imageUrl)
+//                    .into(imgHolder);
         });
     }
 

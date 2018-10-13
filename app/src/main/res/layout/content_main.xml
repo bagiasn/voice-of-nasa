@@ -8,26 +8,42 @@
     tools:context=".ui.MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <TextView
+        android:id="@+id/main_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/main_description"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/main_guideline"/>
+
+
+    <android.support.constraint.Guideline
+        android:id="@+id/main_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.6"/>
+
+    <View
+        android:id="@+id/main_separator"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@id/main_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <ImageView
         android:id="@+id/main_image_holder"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/main_image_holder_description"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/main_listeningIndicator"
-        style="@style/AVLoadingIndicatorView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:visibility="gone"
-        app:indicatorColor="@android:color/holo_blue_light"
-        app:indicatorName="BallRotateIndicator"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/main_separator"
+        android:contentDescription="@string/main_image_description" />
 
 </android.support.constraint.ConstraintLayout>
