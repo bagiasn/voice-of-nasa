@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,9 +17,8 @@ import com.github.bagiasn.nasavoicecrawler.data.api.nlu.ApiResponse;
 import com.github.bagiasn.nasavoicecrawler.data.api.repo.DataRepository;
 import com.github.bagiasn.nasavoicecrawler.data.helper.Constants;
 import com.github.bagiasn.nasavoicecrawler.data.utils.NlpListener;
+import com.github.bagiasn.nasavoicecrawler.data.utils.TtsManager;
 import com.wang.avi.AVLoadingIndicatorView;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity implements NlpEventsListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -30,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     private SpeechRecognizer speechRecognizer;
     private Intent recognitionIntent;
     private DataRepository dataRepository;
+    private TtsManager ttsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +38,13 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
         setupUi();
 
         setupUtil();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (ttsManager != null) ttsManager.terminate();
+
+        super.onDestroy();
     }
 
     private void setupUtil() {
@@ -54,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
             isRecognitionDisabled = true;
         }
 
+        ttsManager = new TtsManager(this);
+
         dataRepository = DataRepository.getInstance();
     }
 
@@ -63,7 +71,12 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            if (!isRecognitionDisabled) { startListening(); }
+            if (!isRecognitionDisabled) {
+                // Make sure to stop tts.
+                ttsManager.stop();
+                // Listen!
+                startListening();
+            }
         });
     }
 
@@ -108,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
             // Set TTS text.
             TextView tvTts = findViewById(R.id.main_tts);
             tvTts.setText(result.getTextToSpeak());
+
+            ttsManager.speak(result.getTextToSpeak());
         });
     }
 
