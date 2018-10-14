@@ -44,6 +44,12 @@ public class InfoActivity extends AppCompatActivity implements TtsEventListener 
             // Set TTS text.
             TextView tvTts = findViewById(R.id.info_tts);
             tvTts.setText(info.get(2));
+            tvTts.setOnLongClickListener(v -> {
+                if (ttsManager != null) ttsManager.stop();
+                setResult(RESULT_OK);
+                finish();
+                return true;
+            });
 
             ttsManager = new TtsManager(getApplicationContext(), this);
             new Handler().postDelayed(() -> ttsManager.speak(info.get(2)), 2000);
@@ -56,6 +62,9 @@ public class InfoActivity extends AppCompatActivity implements TtsEventListener 
 
         super.onDestroy();
     }
+
+    @Override
+    public void onBackPressed() { }
 
     @Override
     public void onDone() {
