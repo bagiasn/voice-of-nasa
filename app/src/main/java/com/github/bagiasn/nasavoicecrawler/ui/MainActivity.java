@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
+                if (mainState == 10) return;
                 dataRepository.performNluRequest("", mainState, true,this);
             }
         }
@@ -111,7 +112,12 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
 
     @Override
     public void onDone() {
-        startListening();
+        if (mainState < 10) {
+            startListening();
+        } else {
+            FloatingActionButton fab = findViewById(R.id.fab);
+            fab.post(fab::show);
+        }
     }
 
     private void setupUtil() {
@@ -134,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
 
     private void setupUi() {
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setLogo(R.drawable.astronaut_48);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -183,7 +191,9 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
         textSwitcher.setFactory(mainViewFactory);
         // Set the in/out animations. Using the defaults.
         Animation in = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+        in.setDuration(300);
         Animation out = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
+        out.setDuration(300);
         textSwitcher.setInAnimation(in);
         startTextSwitcher.setInAnimation(in);
         textSwitcher.setOutAnimation(out);
@@ -218,19 +228,12 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
      * @param newText the updated text to set.
      */
     private void changeText(String newText) {
-        switch (mainState) {
-            case 1:
-            case 2:
-            case 5:
-            case 6:
-                textSwitcher.setCurrentText("");
-                startTextSwitcher.setText(newText);
-                break;
-            case 3:
-            case 4:
-                startTextSwitcher.setCurrentText("");
-                textSwitcher.setText(newText);
-                break;
+        if (newText.length() > 200) {
+            startTextSwitcher.setCurrentText("");
+            textSwitcher.setText(newText);
+        } else {
+            textSwitcher.setCurrentText("");
+            startTextSwitcher.setText(newText);
         }
     }
 }
