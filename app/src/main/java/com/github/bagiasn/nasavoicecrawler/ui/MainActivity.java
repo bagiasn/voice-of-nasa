@@ -67,6 +67,53 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
         super.onDestroy();
     }
 
+    @Override
+    public void onNlpResult(String result) {
+        dataRepository.performNluRequest(result, mainState,false,this);
+
+        closeRecognizer();
+    }
+
+    @Override
+    public void onNlpError() {
+        // Clean speechRecognizer.
+        closeRecognizer();
+        // Send empty request to keep things going.
+        dataRepository.performNluRequest("", mainState,false,this);
+    }
+
+    @Override
+    public void onRecognizerReady() {
+        AVLoadingIndicatorView indicatorView = findViewById(R.id.main_listeningIndicator);
+        indicatorView.post(indicatorView::show);
+    }
+
+    @Override
+    public void onLoadResult(int type, ArrayList<String> result) {
+        if (type == 0) {
+            runOnUiThread(() -> changeText(result.get(2)));
+            ttsManager.speak(result.get(2));
+        } else {
+            Intent intent = new Intent(this, InfoActivity.class);
+            intent.putStringArrayListExtra(Constants.EXTRA_INFO_LIST, result);
+            startActivityForResult(intent, 1);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                dataRepository.performNluRequest("", mainState, true,this);
+            }
+        }
+    }
+
+    @Override
+    public void onDone() {
+        startListening();
+    }
+
     private void setupUtil() {
         // Setup the intent here for reusability.
         recognitionIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -108,59 +155,16 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
 
     private void startListening() {
         if (Looper.getMainLooper() != Looper.myLooper()) {
-            runOnUiThread(() -> {
-                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(MainActivity.this);
-                speechRecognizer.setRecognitionListener(new NlpListener(MainActivity.this));
-                speechRecognizer.startListening(recognitionIntent);
-            });
+            runOnUiThread(this::startSpeechRecognizer);
         } else {
-            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(MainActivity.this);
-            speechRecognizer.setRecognitionListener(new NlpListener(MainActivity.this));
-            speechRecognizer.startListening(recognitionIntent);
+            startSpeechRecognizer();
         }
     }
 
-    @Override
-    public void onNlpResult(String result) {
-        dataRepository.performNluRequest(result, mainState,false,this);
-
-        closeRecognizer();
-    }
-
-    @Override
-    public void onNlpError() {
-        // Show error popup.
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.post(fab::show);
-        // Clean speechRecognizer.
-        closeRecognizer();
-    }
-
-    @Override
-    public void onRecognizerReady() {
-        AVLoadingIndicatorView indicatorView = findViewById(R.id.main_listeningIndicator);
-        indicatorView.post(indicatorView::show);
-    }
-
-    @Override
-    public void onLoadResult(int type, ArrayList<String> result) {
-        if (type == 0) {
-            runOnUiThread(() -> changeText(result.get(2)));
-            ttsManager.speak(result.get(2));
-        } else {
-            Intent intent = new Intent(this, InfoActivity.class);
-            intent.putStringArrayListExtra(Constants.EXTRA_INFO_LIST, result);
-            startActivityForResult(intent, 1);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                dataRepository.performNluRequest("", mainState, true,this);
-            }
-        }
+    private void startSpeechRecognizer() {
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(MainActivity.this);
+        speechRecognizer.setRecognitionListener(new NlpListener(MainActivity.this));
+        speechRecognizer.startListening(recognitionIntent);
     }
 
     private void closeRecognizer() {
@@ -228,13 +232,5 @@ public class MainActivity extends AppCompatActivity implements NlpEventsListener
                 textSwitcher.setText(newText);
                 break;
         }
-    }
-
-    @Override
-    public void onDone() {
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.post(fab::hide);
-
-        startListening();
     }
 }

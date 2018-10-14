@@ -24,9 +24,6 @@ public class InfoActivity extends AppCompatActivity implements TtsEventListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
-        Toolbar toolbar = findViewById(R.id.info_toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
 
         Intent callingIntent = getIntent();
         if (callingIntent != null && callingIntent.hasExtra(Constants.EXTRA_INFO_LIST)) {
@@ -36,8 +33,9 @@ public class InfoActivity extends AppCompatActivity implements TtsEventListener 
             if (info.isEmpty() || info.size() != 3) return;
 
             // Set title.
-            TextView tvTitle = findViewById(R.id.info_title);
-            tvTitle.setText(info.get(0));
+            Toolbar toolbar = findViewById(R.id.info_toolbar);
+            toolbar.setTitle(info.get(0));
+            setSupportActionBar(toolbar);
             // Load image.
             ImageView imgHolder = findViewById(R.id.info_image_holder);
             Glide.with(InfoActivity.this)
